@@ -1,0 +1,21 @@
+# NOTE: profiles.yml is normally excluded from version control, since it holds
+# warehouse credentials. It is committed here on purpose: DuckDB's connection is
+# a local file path, so there is nothing secret to leak — and it means the repo
+# runs immediately after cloning, with no setup.
+#
+# Against a real warehouse the credentials would come from env vars
+# (password: "{{ env_var('DBT_PASSWORD') }}") and this file would be gitignored.
+
+bnpl_analytics:
+  outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+      threads: 4
+
+    prod:
+      type: duckdb
+      path: prod.duckdb
+      threads: 4
+
+  target: dev

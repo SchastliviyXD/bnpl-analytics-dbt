@@ -1,0 +1,8 @@
+.venv/
+target/
+dbt_packages/
+logs/
+*.duckdb
+.DS_Store
+# dbt writes an anonymous-usage id here; machine-local, not project config
+.user.yml
