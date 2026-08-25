@@ -1,0 +1,20 @@
+version: 2
+seeds:
+  - name: raw_customers
+    description: "Synthetic UK bnpl customers, one row per customer."
+    config:
+      column_types:
+        # Phone numbers are identifiers, not numbers. dbt's type inference reads
+        # "+447700000001" as an integer, which fails to load and would strip the
+        # leading "+" even if it didn't. Same rule applies to postcodes and any
+        # id with leading zeros.
+        phone: varchar
+  
+  - name: raw_plans
+    description: "One row per bnpl plan (financed basket). Money in pence."
+  
+  - name: raw_installments
+    description: "Payment schedule, one row per scheduled instalment. Money in pence"
+
+  - name: raw_merchants
+    description: "Retail partners originating bnpl plans."

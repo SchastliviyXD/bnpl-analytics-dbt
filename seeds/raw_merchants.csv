@@ -1,0 +1,41 @@
+merchant_id,merchant_name,category,city
+1,Merchant 001,Fashion,London
+2,Merchant 002,Home & Garden,Leeds
+3,Merchant 003,Electronics,Birmingham
+4,Merchant 004,Fashion,Sheffield
+5,Merchant 005,Fashion,Cardiff
+6,Merchant 006,Beauty,London
+7,Merchant 007,Fashion,Manchester
+8,Merchant 008,Electronics,Leeds
+9,Merchant 009,Sports,Cardiff
+10,Merchant 010,Fashion,Sheffield
+11,Merchant 011,Electronics,Sheffield
+12,Merchant 012,Beauty,Leeds
+13,Merchant 013,Beauty,Cardiff
+14,Merchant 014,Home & Garden,London
+15,Merchant 015,Electronics,Liverpool
+16,Merchant 016,Home & Garden,Glasgow
+17,Merchant 017,Electronics,Leeds
+18,Merchant 018,Home & Garden,Manchester
+19,Merchant 019,Fashion,Liverpool
+20,Merchant 020,Fashion,Bristol
+21,Merchant 021,Home & Garden,Cardiff
+22,Merchant 022,Home & Garden,London
+23,Merchant 023,Beauty,Sheffield
+24,Merchant 024,Fashion,Liverpool
+25,Merchant 025,Fashion,Sheffield
+26,Merchant 026,Home & Garden,Cardiff
+27,Merchant 027,Home & Garden,Cardiff
+28,Merchant 028,Electronics,Manchester
+29,Merchant 029,Fashion,Leeds
+30,Merchant 030,Home & Garden,Manchester
+31,Merchant 031,Electronics,Manchester
+32,Merchant 032,Beauty,Glasgow
+33,Merchant 033,Beauty,Bristol
+34,Merchant 034,Electronics,Bristol
+35,Merchant 035,Home & Garden,Leeds
+36,Merchant 036,Home & Garden,Manchester
+37,Merchant 037,Sports,Birmingham
+38,Merchant 038,Sports,Leeds
+39,Merchant 039,Electronics,Edinburgh
+40,Merchant 040,Beauty,Glasgow
