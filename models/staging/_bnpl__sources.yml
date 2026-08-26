@@ -1,0 +1,73 @@
+version: 2
+
+sources:
+  - name: bnpl
+    description: >
+      Raw bnpl system tables. In production these would be replicated from the 
+      operational database by an ingestion tool; in this repo they are loaded
+      from synthetic CSV seeds so the project runs with no external warehouse.
+    schema: main
+    tables:
+
+      - name: raw_customers
+        description: "One row per registered customer"
+        columns:
+          - name: customer_id
+            description: "Primary key"
+          - name: full_name
+            description: "Full name of the customer"
+          - name: phone
+            description: "Phone number of the customer. Stored as TEXT, not a number."
+          - name: city
+            description: "Customer's city, free text from registration"
+          - name: status
+            description: "Account state: active or blocked"
+      
+      - name: raw_installments
+        description: "One row per installment payment"
+        columns:
+          - name: installment_id
+            description: "Primary key - payment id"
+          - name: plan_id
+            description: "Foreign key from raw_plans"
+          - name: payment_number
+            description: "Number of a consecutive payment. On 3/4 months plans #1 is real payment
+                          in 6/12 mo - #1 is downpayment and payments start from #2"
+          - name: due_date
+            description: "Scheduled date of payment due"
+          - name: amount_pence
+            description: "Amount of the payment receivable in pence (1 pound = 100 pence)"
+          - name: paid_date
+            description: "Date of the actual payment. NULL means unpaid -
+                          either missed or not yet due"
+
+      - name: raw_merchants
+        description: "One row per merchant"
+        columns:
+          - name: merchant_id
+            description: "Primary key"
+          - name: merchant_name
+            description: "Merchant name"
+          - name: category
+            description: "Products sold category"
+          - name: city
+            description: "City of the merchant"
+      
+      - name: raw_plans
+        description: "One row per plan"
+        columns:
+          - name: plan_id
+            description: "Primary key - credit id"
+          - name: customer_id
+            description: "Foreign key from raw_customers"
+          - name: merchant_id
+            description: "Foreign key from raw_merchants"
+          - name: basket_amount_pence
+            description: "Full retail basket value in pence. Not the financed amount -
+                          that's basket - deposit"
+          - name: deposit_amount_pence
+            description: "Deposit amount in pence"
+          - name: term_months
+            description: "Length of credit in months"
+          - name: created_at
+            description: "Credit created date"
