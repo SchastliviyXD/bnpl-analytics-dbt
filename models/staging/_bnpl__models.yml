@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: stg_bnpl__installments
+    description: >
+      One row per scheduled instalment. Grain: installment_id
+      NULL paid_date means unpaid - either MISSED or NOT YET DUE;
+      use is_due to separate them. Every delinquency metric depends on the distinction.
+    columns:
+      - name: installment_id
+        description: "Primary key"
+        tests: [unique, not_null]
+      
+      - name: plan_id
+        description: "FK to the plan this instalment belongs to"
+        tests:
+          - not_null
+          - relationships:
+            to: ref('stg_bnpl__plans')
+            field: plan_id
+      
+      - name: amount_gbp
+        description: "Instalment amount in GBP. Decimal, converted from source pence"
+        tests: [not_null]
+
+      - name: is_due
+        description: "True once due_date has passed as at the reporting date"
+        tests: [not_null]
+  
+  - name: stg_bnpl__customers
+    desctiption: >
+      Once row per registered customer. Grain: customer_id
+    columns:
+      - name: customer_id
+        description: "Primary key"
+        tests: [unique, not_null]
+      
+      - name: status
+        description: "Current state of the customer"
+        tests: [accepted_values: active, blocked]
+  
+  - name: stg_bnpl__merchants
+    desctiption: >
+      Once row per registered merchant. Grain: merchant_id
+    columns:
+      - name: merchant_id
+        description: "Primary key"
+        tests: [unique, not_null]
+      
+      - name: status
+        description: "Current state of the customer"
+        tests: [accepted_values: Beauty, Electronics, Fashion, Home & Garden, Sports]
+
+  - name: stg_bnpl__plans
+    desctiption: >
+      Once row per each plan. Grain: plan_id
+    columns:
+      - name: plan_id
+        description: "Primary key"
+        tests: [unique, not_null]
+      
+      - name: customer_id
+        description: "FK to the customer this plan belongs to"
+        tests: 
+          - not_null
+          - ref('stg_bnpl__customers')
+
+      - name: merchant_id
+        description: "FK to the merchant this plan belongs to"
+        tests: 
+          - not_null
+          - ref('stg_bnpl__merchants')
+      
+      - name: term_months
+        description: "Length of the plan in months"
+        tests: [accepted_values: 3, 4, 6, 12]
+      
+      - name: financed_amount_gbp
+        description: "Amount expected back from the customer. Plan total amount - downpayment"
+        tests: [not_null]
