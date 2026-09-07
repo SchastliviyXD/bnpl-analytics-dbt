@@ -63,8 +63,15 @@ for plan_id in range(1, 5001):
     # A minority of plans go bad, and badness persists across the schedule —
     # so roll rate and vintage curves have real signal to find.
     bad = random.random() < 0.12
-    amount_pence = round((basket_pence - deposit_pence) / term)
+    principal_pence = basket_pence - deposit_pence
+    amount_pence = round(principal_pence / term)
+    allocated = 0
     for n in range(1, term + 1):
+        # The final instalment absorbs the rounding remainder, so the schedule
+        # sums exactly to the principal. This is what real lenders do.
+        this_amount = amount_pence if n < term else principal_pence - allocated
+        allocated += this_amount
+        
         due = created + timedelta(days=30 * n)
         if due > TODAY:
             paid = ""                                  # not yet due
@@ -72,7 +79,7 @@ for plan_id in range(1, 5001):
             paid = ""                                  # missed
         else:
             paid = due + timedelta(days=random.randint(-3, 12))
-        installments.append((inst_id, plan_id, n, due, amount_pence, paid))
+        installments.append((inst_id, plan_id, n, due, this_amount, paid))
         inst_id += 1
 
 write("raw_plans",

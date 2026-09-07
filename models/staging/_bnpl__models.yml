@@ -16,8 +16,8 @@ models:
         tests:
           - not_null
           - relationships:
-            to: ref('stg_bnpl__plans')
-            field: plan_id
+              to: ref('stg_bnpl__plans')
+              field: plan_id
       
       - name: amount_gbp
         description: "Instalment amount in GBP. Decimal, converted from source pence"
@@ -28,7 +28,7 @@ models:
         tests: [not_null]
   
   - name: stg_bnpl__customers
-    desctiption: >
+    description: >
       Once row per registered customer. Grain: customer_id
     columns:
       - name: customer_id
@@ -37,22 +37,26 @@ models:
       
       - name: status
         description: "Current state of the customer"
-        tests: [accepted_values: active, blocked]
+        tests: 
+          - accepted_values:
+              values: [active, blocked]
   
   - name: stg_bnpl__merchants
-    desctiption: >
+    description: >
       Once row per registered merchant. Grain: merchant_id
     columns:
       - name: merchant_id
         description: "Primary key"
         tests: [unique, not_null]
       
-      - name: status
+      - name: category
         description: "Current state of the customer"
-        tests: [accepted_values: Beauty, Electronics, Fashion, Home & Garden, Sports]
+        tests: 
+          - accepted_values: 
+              values: [Beauty, Electronics, Fashion, Home & Garden, Sports]
 
   - name: stg_bnpl__plans
-    desctiption: >
+    description: >
       Once row per each plan. Grain: plan_id
     columns:
       - name: plan_id
@@ -63,17 +67,23 @@ models:
         description: "FK to the customer this plan belongs to"
         tests: 
           - not_null
-          - ref('stg_bnpl__customers')
+          - relationships:
+              to: ref('stg_bnpl__customers')
+              field: customer_id
 
       - name: merchant_id
         description: "FK to the merchant this plan belongs to"
         tests: 
           - not_null
-          - ref('stg_bnpl__merchants')
+          - relationships:
+              to: ref('stg_bnpl__merchants')
+              field: merchant_id
       
       - name: term_months
         description: "Length of the plan in months"
-        tests: [accepted_values: 3, 4, 6, 12]
+        tests:
+          - accepted_values: 
+              values: [3, 4, 6, 12]
       
       - name: financed_amount_gbp
         description: "Amount expected back from the customer. Plan total amount - downpayment"
