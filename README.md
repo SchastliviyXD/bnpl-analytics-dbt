@@ -48,22 +48,22 @@ Staging rule: rename, cast, per-row derivations only - no joins, so the grain is
 
 ## Testing
 
-21 tests, of two kinds. Generic tests are declared in YAML: `unique` + `not_null` pin the grain of every model, `relationships` enforces each foreign key so a broken join fails the build instread of silently dropping rows, and `accepted_values` guards the enums. Singular tests are plain SQL files in `tests/` that return violating rows - used for business rules no generic test can express.
+21 tests, of two kinds. Generic tests are declared in YAML: `unique` + `not_null` pin the grain of every model, `relationships` enforces each foreign key so a broken join fails the build instead of silently dropping rows, and `accepted_values` guards the enums. Singular tests are plain SQL files in `tests/` that return violating rows - used for business rules no generic test can express.
 
 ### A defect this suite caught
 
-The reconciliation test asserts that every plan's payment schedule sums exactly to the amount financed. On first run it failed on 1,691 of 5,000 plans (34%), each off by £0.01–£0.04, totalling £0.2 across the book.
+The reconciliation test asserts that every plan's payment schedule sums exactly to the amount financed. On first run it failed on 1,691 of 5,000 plans (34%), each off by £0.01–£0.04, totalling £0.20 across the book.
 
 Root cause was per-instalment rounding: round(principal / term) repeated term times doesn't equal principal unless it divides evenly. Three-month plans failed 58% of the time; four-month plans never did, because those principals happened to be divisible by four.
 
-The fix was at the source, not in the test - the final instalment now absorbs the remainder, which is how real lenders build a schedule. £0.2 across a book is trivial in aggregate, but per contract it means systematically over- or under-collecting from named customers.
+The fix was at the source, not in the test - the final instalment now absorbs the remainder, which is how real lenders build a schedule. £0.20 across a book is trivial in aggregate, but per contract it means systematically over- or under-collecting from named customers.
 
 ## Design decisions
 
 - DuckDB, so the project runs on clone with no warehouse
 - profiles.yml committed deliberately (no credentials in it; comment in the file explains)
 - Money stored in pence, converted once in staging to decimal, never float
-- reporting_date() macro, frozen on dev and current_date on prod - point-in-time correctness. On static data, current_date drifted delinquency from 6.55 to 8.26% in 25 days
+- reporting_date() macro, frozen on dev and current_date on prod - point-in-time correctness. On static data, current_date drifted delinquency from 6.5% to 8.26% in 25 days
 - Sources layer kept even though seeds make it partly redundant - real DAG entry point, and where freshness SLAs would live
 
 ## Roadmap
