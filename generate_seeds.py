@@ -60,9 +60,12 @@ for plan_id in range(1, 5001):
     plans.append((plan_id, random.randint(1, 2000), random.randint(1, 40),
                   basket_pence, deposit_pence, term, created))
 
-    # A minority of plans go bad, and badness persists across the schedule —
-    # so roll rate and vintage curves have real signal to find.
-    bad = random.random() < 0.12
+    # Underwriting loosens over the period: ~8% of plans go bad in the earliest
+    # cohorts, rising to ~18% in the latest. This is what vintage analysis
+    # exists to detect — later cohorts deteriorating faster at the same age.
+    days_in = (created - START).days
+    bad_rate = 0.08 + 0.10 * (days_in / 430)
+    bad = random.random() < bad_rate
     principal_pence = basket_pence - deposit_pence
     amount_pence = round(principal_pence / term)
     allocated = 0

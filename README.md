@@ -8,6 +8,12 @@ How do we see loan-book deterioration weeks before NPL spikes?
 
 NPL is lagging - by the time a loan is 90 days past due, the decision that caused it was three months ago. Roll rate moves first. That's why the marts are built around flow between delinquency buckets, not just the headline rate.
 
+## Findings
+
+**Cohorts are deteriorating, and the headline rate hides it.** Plans originated in early 2026 default 2.3x faster at six months on book than those from January 2025 - 13.65 of principal versus 5.9%. This is invisible in overall NPL rate, which mixes cohorts of different ages: a young cohort looks healthy simply because it has not has time to fail. It only appears once you index on months-on-book and apply a maturity filter, so a five-month-old cohort is never compared against a nineteen-month-old one.
+
+**Exposure is more concentrated than contract counts suggest.** 11% of plans sit at 90+ days past due, but they hold 70% of the outstanding balance. Counting contracts, the book looks 89% healthy; counting money, two thirds of it is non-performing. This is why PAR is measured on balance rather than headcount - and why a delinquent contract's *entire* remaining balance counts, not just its overdue instalment
+
 ## Quickstart
 
 ```bash
@@ -68,8 +74,8 @@ The fix was at the source, not in the test - the final instalment now absorbs th
 
 ## Roadmap
 
-- [ ] `mart_npl_buckets` - PAR/DPD bucketing at daily grain
-- [ ] `mart_roll_rate` - current -> 30 -> 60 -> 90 flow rates
+- [x] `mart_npl_buckets` - PAR/DPD bucketing at daily grain
+- [x] `mart_roll_rate` - current -> 30 -> 60 -> 90 flow rates
 - [ ] `mart_vintage_curves` - cumulative default by months-on-book per cohort
 - [ ] dbt docs lineage screenshot
 - [ ] CI on GitHub Actions
