@@ -49,7 +49,8 @@ select
     snapshot_date,
     dpd,
     outstanding_gbp,
-    case
+    case    
+        when outstanding_gbp = 0 then 'Settled'
         when dpd <= 0 or dpd is null then 'Current'
         when dpd between 1 and 29 then '1-29'
         when dpd between 30 and 59 then '30-59'
@@ -57,4 +58,5 @@ select
         when dpd >= 90 then '90+'
     end as dpd_bucket
 from as_at
-where outstanding_gbp > 0 -- settled plan has left the book
+qualify outstanding_gbp > 0
+    or lag(outstanding_gbp) over (partition by plan_id order by snapshot_date) > 0

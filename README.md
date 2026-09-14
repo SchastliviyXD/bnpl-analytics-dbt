@@ -70,6 +70,6 @@ The fix was at the source, not in the test - the final instalment now absorbs th
 - [x] `int_plan_bucket_monthly` - point-in-time delinquency snapshots rebuilt from the schedule
 - [x] `mart_npl_buckets` - PAR bucketing by plan-level DPD, as at the reporting date
 - [x] `mart_vintage_curves` - cumulative 90+ default rate by cohort and months-on-book
-- [ ] `mart_roll_rate` - current -> 30 -> 60 -> 90 flow rates
+- [x] `mart_roll_rate` - current -> 30 -> 60 -> 90 flow rates
 - [ ] dbt docs lineage screenshot
 - [ ] CI on GitHub Actions

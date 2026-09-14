@@ -9,6 +9,7 @@ with latest_snapshot as (
         outstanding_gbp
     from {{ ref('int_plan_bucket_monthly')}}
     where snapshot_date = {{ reporting_date()}}
+        and dpd_bucket <> 'Settled' -- a repain plan has left the book
 ),
 
 by_bucket as (
