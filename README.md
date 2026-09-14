@@ -10,9 +10,9 @@ NPL is lagging - by the time a loan is 90 days past due, the decision that cause
 
 ## Findings
 
-**Cohorts are deteriorating, and the headline rate hides it.** Plans originated in early 2026 default 2.3x faster at six months on book than those from January 2025 - 13.65 of principal versus 5.9%. This is invisible in overall NPL rate, which mixes cohorts of different ages: a young cohort looks healthy simply because it has not has time to fail. It only appears once you index on months-on-book and apply a maturity filter, so a five-month-old cohort is never compared against a nineteen-month-old one.
+**Cohorts are deteriorating, and the headline rate hides it.** Plans originated in early 2026 default 2.3x faster at six months on book than those from January 2025 - 13.6% of principal versus 5.9%. This is invisible in overall NPL rate, which mixes cohorts of different ages: a young cohort looks healthy simply because it has not had time to fail. It only appears once you index on months-on-book and apply a maturity filter, so a five-month-old cohort is never compared against a nineteen-month-old one.
 
-**Exposure is more concentrated than contract counts suggest.** 11% of plans sit at 90+ days past due, but they hold 70% of the outstanding balance. Counting contracts, the book looks 89% healthy; counting money, two thirds of it is non-performing. This is why PAR is measured on balance rather than headcount - and why a delinquent contract's *entire* remaining balance counts, not just its overdue instalment
+**Over half the live book is non-performing, and measuring it wrong understates risk by 5x.** 52% of active plans are 90+ days past due, holding 68% of outstanding balance. Calculated over every contract ever written the figure is 11% - but that denominator includes 3,874 fully-repaid plans that have left the book. Good loans settle and exit; bad loans stay, so delinquency has to be measured against the live portfolio.
 
 ## Quickstart
 
@@ -40,17 +40,10 @@ Staging rule: rename, cast, per-row derivations only - no joins, so the grain is
 
 ## The dataset
 
-- Plans: 5,000
-- Customers: 2,000
-- Merchants: 40
-- Instalments: 28,192
-
-- Basket value: £2,598,510
-- Financed (at risk): £2,437,311
-- Cities: 10 UK
-- Cohorts: Jan 2025 - Mar 2026
-- Delinquency: 1,691 / 26,025 due = 6.5%
-- Reporting date: frozen at 2026-08-01
+- 5,000 plans - 2,000 customers - 40 merchants - 27,928 instalments
+- £2,605,370 basket value, £2,450,528 financed
+- Live book: 1,126 plans, £257,493 outstanding
+- 10 UK cities, cohorts Jan 2025 - Mar 2026, reporting date frozen at 2026-08-01
 
 ## Testing
 
@@ -74,8 +67,9 @@ The fix was at the source, not in the test - the final instalment now absorbs th
 
 ## Roadmap
 
-- [x] `mart_npl_buckets` - PAR/DPD bucketing at daily grain
-- [x] `mart_roll_rate` - current -> 30 -> 60 -> 90 flow rates
-- [ ] `mart_vintage_curves` - cumulative default by months-on-book per cohort
+- [x] `int_plan_bucket_monthly` - point-in-time delinquency snapshots rebuilt from the schedule
+- [x] `mart_npl_buckets` - PAR bucketing by plan-level DPD, as at the reporting date
+- [x] `mart_vintage_curves` - cumulative 90+ default rate by cohort and months-on-book
+- [ ] `mart_roll_rate` - current -> 30 -> 60 -> 90 flow rates
 - [ ] dbt docs lineage screenshot
 - [ ] CI on GitHub Actions

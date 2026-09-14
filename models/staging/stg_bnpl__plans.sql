@@ -20,7 +20,7 @@ renamed as (
         ((basket_amount_pence - deposit_amount_pence) / 100)::decimal(12, 2) as financed_amount_gbp,
 
         term_months,
-        created_at,
+        created_at as contract_date,
 
         -- Cohort month extracted from created_at cased specifically as date
         date_trunc('month', created_at)::date as cohort_month
