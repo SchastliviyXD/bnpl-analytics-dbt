@@ -14,6 +14,8 @@ NPL is lagging - by the time a loan is 90 days past due, the decision that cause
 
 **Over half the live book is non-performing, and measuring it wrong understates risk by 5x.** 52% of active plans are 90+ days past due, holding 68% of outstanding balance. Calculated over every contract ever written the figure is 11% - but that denominator includes 3,874 fully-repaid plans that have left the book. Good loans settle and exit; bad loans stay, so delinquency has to be measured against the live portfolio.
 
+**The cure window closes at 30 days.** Of accounts 1-29 days late, 53% recover — 31% return to current, 22% repay outright. Past that it collapses: 98% of 30-59 accounts roll to 60-89, 99.8% of those roll to 90+, and 90+ is absorbing. Collections effort is worth far more in the first 30 days than at any point after. (The synthetic generator never lets a missed payment be paid later, so the deep buckets are more absorbing here than in a real book — the shape holds, the levels are exaggerated.)
+
 ## Quickstart
 
 ```bash
@@ -37,6 +39,8 @@ No database server and no credentials needed - DuckDB writes a local file.
 | `macros/` | Reusable Jinja |
 
 Staging rule: rename, cast, per-row derivations only - no joins, so the grain is guaranteed.
+
+![Lineage graph](docs/lineage.jpg)
 
 ## The dataset
 
@@ -71,5 +75,6 @@ The fix was at the source, not in the test - the final instalment now absorbs th
 - [x] `mart_npl_buckets` - PAR bucketing by plan-level DPD, as at the reporting date
 - [x] `mart_vintage_curves` - cumulative 90+ default rate by cohort and months-on-book
 - [x] `mart_roll_rate` - current -> 30 -> 60 -> 90 flow rates
-- [ ] dbt docs lineage screenshot
+- [x] dbt docs lineage screenshot
 - [ ] CI on GitHub Actions
+- [ ] Freshness SLAs once fed by a real ingestion layer
