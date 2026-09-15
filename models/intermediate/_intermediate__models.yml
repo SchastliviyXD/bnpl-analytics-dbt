@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: int_plan_bucket_monthly
+    description: >
+      One row per plan per month-end. Grain: (plan_id, snapshot_date).
+      Reconstructs the delinqunecy history no snapshot table captured, by asking
+      "what was true as at date D" for each month-end - an instalment counts as
+      unpaid  at D if paid_date is null OR later than D. Using paid_date IS NULL
+      alone would leak today's knowledge into the past.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [plan_id, snapshot_date]
+    columns:
+      - name: plan_id
+        description: "FK to the plan"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_bnpl__plans')
+              field: plan_id
+      - name: snapshot_date
+        description: "Month-end the state is measured as at."
+        tests: [not_null]
+      - name: dpd
+        description: >
+          Days past due of the plan's OLDEST unpaid instalment as at
+          snapshot_date. NULL when nothing was overdue.
+      - name: outstanding_gbp
+        description: "Balance still unpaid as at snapshot_date, in GBP."
+        tests: [not_null]
+      - name: dpd_bucket
+        description: >
+          Delinquency bucket. 'Settled' is terminal - a plan that fully repaid.
+          Only the first settled month is kept, so repayments do not inflate
+          later denominators.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Settled', 'Current', '1-29', '30-59', '60-89', '90+']

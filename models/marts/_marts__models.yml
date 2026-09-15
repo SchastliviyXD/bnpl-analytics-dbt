@@ -1,0 +1,69 @@
+version: 2
+models:
+  - name: mart_npl_buckets
+    description: >
+      One row per delinquency bucket, as at the reporting date. Grain: dpd_bucket.
+      The LIVE book only - settled plans are excluded, since a repaid contract has
+      left the portfolio. PAR convention: a delinquenct contract's entire remaining
+      balance is at risk, not just its overdue instalment.
+    columns:
+      - name: dpd_bucket
+        description: "Delinquency bucket."
+        tests: [unique, not_null]
+      - name: plans
+        description: "Active plans in this bucket."
+        tests: [not_null]
+      - name: outstanding_gbp
+        description: "Balance at risk in this bucket, in GBP."
+        tests: [not_null]
+      - name: pct_of_outstanding
+        description: >
+          Share of the live book's balance. Differs sharply from pct_of_plans -
+          delinquent contracts carry larger balances than performing ones.
+        tests: [not_null]
+
+  - name: mart_vintage_curves
+    description: >
+      One row per origination cohort per month on book.
+      Grain: (cohort_month, months_on_book).
+      Cumulative share of a cohort's principal belonging to plans that reached
+      90+ DPD by that age. Indexing on loan age rather than calendar time is what
+      makes cohorts comparable; the maturity filter stops a young cohort from
+      reporting an age it has not lived through.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [cohort_month, months_on_book]
+    columns:
+      - name: cohort_month
+        description: "Month the plans in this cohort originated."
+        tests: [not_null]
+      - name: months_on_book
+        description: "Age of the cohort in months. 0 is origination."
+        tests: [not_null]
+      - name: cum_default_rate
+        description: "Cumulative default principal / cohort principal. Only ever rises."
+        tests: [not_null]
+  
+  - name: mart_roll_rate
+    description: >
+      One row per month oer bucket transition.
+      Grain: (snapshot_date, from_bucket, to_bucket).
+      Of the plans in from_bucket last month, the share now in to_bucket. Roll
+      rate leads NPL by roughly 90 days. 'Settled' appears as a destination
+      (a cure by full repayment), never as an origin.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [snapshot_date, from_bucket, to_bucket]
+    columns:
+      - name: snapshot_date
+        description: "The month being rolled INTO."
+        tests: [not_null]
+      - name: from_bucket
+        description: "Bucket the plan was in the previous month."
+        tests: [not_null]
+      - name: to_bucket
+        description: "Bucket the plan is in this month."
+        tests: [not_null]
+      - name: roll_rate
+        description: "Share of from_bucket that moved here. Sums to 1 within (month, from_bucket)."
+        tests: [not_null]
